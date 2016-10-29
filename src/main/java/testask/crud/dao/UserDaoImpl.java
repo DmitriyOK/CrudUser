@@ -2,6 +2,7 @@ package testask.crud.dao;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.hibernate.Query;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 
@@ -22,6 +23,8 @@ public class UserDaoImpl implements UserDao {
 
     private SessionFactory sessionFactory;
 
+    private static int pageCount;
+
     public void setSessionFactory(SessionFactory sessionFactory) {
         this.sessionFactory = sessionFactory;
     }
@@ -30,6 +33,7 @@ public class UserDaoImpl implements UserDao {
 
         Session session = this.sessionFactory.getCurrentSession();
         session.persist(user);
+
         logger.debug(String.format("User %s was added", user.getName()));
 
     }
@@ -40,7 +44,6 @@ public class UserDaoImpl implements UserDao {
         session.update(user);
 
         logger.debug(String.format("User %s was updated", user.getName()));
-
     }
 
     public void removeUser(int id) {
@@ -65,14 +68,32 @@ public class UserDaoImpl implements UserDao {
     }
 
     @SuppressWarnings("unchecked")
-    public List<User> listUsers() {
+    public List<User> listUsers(int pageNumber) {
+
+        int pageSize = 4;
+        int firstResult=(pageNumber*pageSize)-pageSize;
 
         Session session = this.sessionFactory.getCurrentSession();
-        List<User> users = session.createQuery("from User").list();
+        Query query = session.createQuery("from User");
+
+        int totalResults = query.list().size();
+
+        pageCount =  totalResults % pageSize==0 ? totalResults / pageSize : totalResults / pageSize +1 ;
+
+        logger.debug(String.format("Max results: %s Max pages: %s", totalResults, pageCount));
+
+        query.setFirstResult(firstResult);
+        query.setMaxResults(pageSize);
+
+        List<User> users = query.list();
 
         for(User user : users)
             logger.debug("User: "+ user.toString());
 
         return users;
+    }
+
+    public static int getPageCount() {
+        return pageCount;
     }
 }

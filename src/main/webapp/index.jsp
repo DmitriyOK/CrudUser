@@ -7,7 +7,7 @@
    <body>
      <h3> Click here</h3>
         <br/>
-        <a href="<c:url value="/users"/>" target="_blank">User list</a>
+        <a href="<c:url value="/users/1"/>" target="_blank">User list</a>
         <br/>
     </body>
 </html>

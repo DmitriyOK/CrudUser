@@ -43,7 +43,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Transactional
-    public List<User> listUsers() {
-        return this.userDao.listUsers();
+    public List<User> listUsers(int pageNumber) {
+        return this.userDao.listUsers(pageNumber);
     }
 }
