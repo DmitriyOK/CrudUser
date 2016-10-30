@@ -2,6 +2,7 @@ package testask.crud.dao;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.hibernate.ObjectNotFoundException;
 import org.hibernate.Query;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
@@ -23,7 +24,9 @@ public class UserDaoImpl implements UserDao {
 
     private SessionFactory sessionFactory;
 
-    private static int pageCount;
+    private static int totalPages;
+    private static int totalResults;
+    private static int pageSize=5;
 
     public void setSessionFactory(SessionFactory sessionFactory) {
         this.sessionFactory = sessionFactory;
@@ -44,6 +47,7 @@ public class UserDaoImpl implements UserDao {
         session.update(user);
 
         logger.debug(String.format("User %s was updated", user.getName()));
+        logger.debug("User data "+ user);
     }
 
     public void removeUser(int id) {
@@ -57,7 +61,7 @@ public class UserDaoImpl implements UserDao {
         logger.debug(String.format("User %s was deleted", user.getName()));
     }
 
-    public User getUserById(int id) {
+    public User getUserById(int id) throws ObjectNotFoundException{
 
         Session session = this.sessionFactory.getCurrentSession();
         User user = (User) session.load(User.class, new Integer(id));
@@ -67,20 +71,31 @@ public class UserDaoImpl implements UserDao {
         return user;
     }
 
+    @SuppressWarnings("uncheked")
+    public List<User> getUserAsListById(int id) {
+
+        Session session = this.sessionFactory.getCurrentSession();
+
+        List<User> userAsList = session.createQuery("from User U where U.id="+id).list();
+
+        logger.debug(String.format("User was loaded. %s", userAsList));
+
+        return userAsList;
+    }
+
+
     @SuppressWarnings("unchecked")
     public List<User> listUsers(int pageNumber) {
 
-        int pageSize = 4;
         int firstResult=(pageNumber*pageSize)-pageSize;
 
         Session session = this.sessionFactory.getCurrentSession();
         Query query = session.createQuery("from User");
 
-        int totalResults = query.list().size();
+        totalResults = query.list().size();
+        totalPages =  totalResults % pageSize==0 ? totalResults / pageSize : totalResults / pageSize +1 ;
 
-        pageCount =  totalResults % pageSize==0 ? totalResults / pageSize : totalResults / pageSize +1 ;
-
-        logger.debug(String.format("Max results: %s Max pages: %s", totalResults, pageCount));
+        logger.debug(String.format("Max results: %s Max pages: %s", totalResults, totalPages));
 
         query.setFirstResult(firstResult);
         query.setMaxResults(pageSize);
@@ -93,7 +108,15 @@ public class UserDaoImpl implements UserDao {
         return users;
     }
 
-    public static int getPageCount() {
-        return pageCount;
+    public static int getTotalPages() {
+        return totalPages;
+    }
+
+    public static int getTotalResults() {
+        return totalResults;
+    }
+
+    public static void setPageSize(int pageSize) {
+        UserDaoImpl.pageSize = pageSize;
     }
 }

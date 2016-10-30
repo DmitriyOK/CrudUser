@@ -18,4 +18,6 @@ public interface UserDao {
     public User getUserById(int id);
 
     public List<User> listUsers(int pageNumber);
+
+    public List<User> getUserAsListById(int id);
 }

@@ -46,4 +46,9 @@ public class UserServiceImpl implements UserService {
     public List<User> listUsers(int pageNumber) {
         return this.userDao.listUsers(pageNumber);
     }
+
+    @Transactional
+    public List<User> getUserAsListById(int id) {
+        return this.userDao.getUserAsListById(id);
+    }
 }
