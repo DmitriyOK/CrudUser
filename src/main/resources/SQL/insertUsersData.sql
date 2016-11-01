@@ -48,3 +48,4 @@ INSERT INTO `test`.`user` (`name`, `age`, `isAdmin`) VALUES ('Kirill', '21', '0'
 INSERT INTO `test`.`user` (`name`, `age`, `isAdmin`) VALUES ('Olga', '25', '1');
 INSERT INTO `test`.`user` (`name`, `age`, `isAdmin`) VALUES ('Nadezhda', '25', '0');
 INSERT INTO `test`.`user` (`name`, `age`, `isAdmin`) VALUES ('Stanislav', '28', '0');
+INSERT INTO `test`.`user` (`name`, `age`, `isAdmin`) VALUES ('Stanislav', '33', '1');

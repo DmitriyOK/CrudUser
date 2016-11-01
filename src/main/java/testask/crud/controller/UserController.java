@@ -23,9 +23,10 @@ import java.util.regex.Pattern;
 @Controller
 public class UserController {
 
-    Logger logger = LogManager.getLogger("UerController");
+    private static final Logger logger = LogManager.getLogger("UerController");
 
     private UserService userService;
+    private UserDaoImpl userDao=new UserDaoImpl();
 
     @Autowired(required = true)
     @Qualifier(value = "userService")
@@ -46,12 +47,21 @@ public class UserController {
 
         List<User> users = this.userService.listUsers(pageNumber);
 
-        if (users.size() == 0 || pageNumber == 0) return "error";
+        if (users.size() == 0 || pageNumber == 0) {
 
+            model.addAttribute("statusCode", new Integer(404));
+            model.addAttribute("description", "User with current id not found.");
+
+            return "error";
+        }
         model.addAttribute("user", new User());
         model.addAttribute("listUsers", users);
-        model.addAttribute("pageCount", UserDaoImpl.getTotalPages());
-        model.addAttribute("resultsFound", UserDaoImpl.getTotalResults());
+        model.addAttribute("pageCount", userDao.getTotalPages());
+        model.addAttribute("resultsFound", userDao.getTotalResults());
+
+        logger.debug("Controller - totalPages: "+ userDao.getTotalPages());
+        logger.debug("Controller - resultsFound: "+ userDao.getTotalResults());
+
 
         return "users";
     }
@@ -61,7 +71,7 @@ public class UserController {
 
         if (!Validator.validateDataUser(user)) {
             model.addAttribute("statusCode", new Integer(400));
-            model.addAttribute("description", "User data not valid. \n Age must be 2 symbols. \n Name must be no more 45 symbols, without cyrillic, digits and space in the end.");
+            model.addAttribute("description", "User data not valid. \n Age must be no more 2 symbols. \n Name must be no more 25 symbols, without cyrillic, digits and space in the end.");
             logger.debug("Wrong data user. " +user);
             return "error";
         }
@@ -71,7 +81,7 @@ public class UserController {
         else
             this.userService.updateUser(user);
 
-        return "redirect:/users/1";
+        return "redirect:/users/search?id="+user.getId();
     }
 
     @RequestMapping("/remove/{id}")
@@ -124,7 +134,7 @@ public class UserController {
                 return "error";
             }
 
-            UserDaoImpl.setPageSize(resultsOnPage);
+            userDao.setPageSize(resultsOnPage);
 
             return "redirect:/users/1";
     }

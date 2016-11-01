@@ -10,6 +10,7 @@ import org.hibernate.SessionFactory;
 import org.springframework.stereotype.Repository;
 import testask.crud.model.User;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -23,10 +24,10 @@ public class UserDaoImpl implements UserDao {
     private static final Logger logger = LogManager.getLogger("UserDaoImpl");
 
     private SessionFactory sessionFactory;
-
-    private static int totalPages;
     private static int totalResults;
+    private static int totalPages;
     private static int pageSize=5;
+    private static ArrayList<Integer> aPages;
 
     public void setSessionFactory(SessionFactory sessionFactory) {
         this.sessionFactory = sessionFactory;
@@ -87,13 +88,14 @@ public class UserDaoImpl implements UserDao {
     @SuppressWarnings("unchecked")
     public List<User> listUsers(int pageNumber) {
 
+        Session session = this.sessionFactory.getCurrentSession();
+
+        Query query = session.createQuery("from User");
         int firstResult=(pageNumber*pageSize)-pageSize;
 
-        Session session = this.sessionFactory.getCurrentSession();
-        Query query = session.createQuery("from User");
-
         totalResults = query.list().size();
-        totalPages =  totalResults % pageSize==0 ? totalResults / pageSize : totalResults / pageSize +1 ;
+
+        aPages = createArrayPages(pageNumber, totalResults);
 
         logger.debug(String.format("Max results: %s Max pages: %s", totalResults, totalPages));
 
@@ -108,15 +110,56 @@ public class UserDaoImpl implements UserDao {
         return users;
     }
 
-    public static int getTotalPages() {
-        return totalPages;
+    private ArrayList<Integer> createArrayPages(int pageNumber, int totalResults){
+
+        int pageCount = totalResults / pageSize;
+
+        totalPages =  totalResults % pageSize==0 ? pageCount : pageCount +1 ;
+
+        ArrayList<Integer> pages = new ArrayList<Integer>();
+
+        int paginationSize = 7;
+
+        if (totalPages > paginationSize) {
+
+            if (pageNumber < paginationSize) {
+                for (int i = 0; i < paginationSize; i++) {
+                    pages.add(1 + i);
+                }
+                return pages;
+            }
+
+            if (totalPages - pageNumber <= 2)  {
+                for (int i = 4; i >= 0; i--) {
+                   pages.add(totalPages - i);
+                }
+            }
+            else {
+                for (int i = -2; i < paginationSize -2; i++) {
+                    pages.add(pageNumber + i);
+                }
+            }
+        }
+        if (totalPages <= paginationSize){
+
+            for (int i = 0; i < totalPages ; i++) {
+                pages.add(i+1);
+            }
+        }
+                logger.debug(pages);
+
+            return pages;
     }
 
-    public static int getTotalResults() {
+    public  ArrayList<Integer> getTotalPages() {
+        return aPages;
+    }
+
+    public void setPageSize(int pageSize) {
+        this.pageSize = pageSize;
+    }
+
+    public int getTotalResults() {
         return totalResults;
-    }
-
-    public static void setPageSize(int pageSize) {
-        UserDaoImpl.pageSize = pageSize;
     }
 }

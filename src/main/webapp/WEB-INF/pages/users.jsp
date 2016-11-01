@@ -1,4 +1,4 @@
-<%@ page import="testask.crud.dao.UserDaoImpl" %>
+
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 <%@ taglib uri="http://www.springframework.org/tags" prefix="spring" %>
 <%@ taglib uri="http://www.springframework.org/tags/form" prefix="form" %>
@@ -79,13 +79,13 @@
         </table>
     <br><br>
 
-     <c:forEach var="i" begin="1" end="${pageCount}">
-         <th width="25" height="25"><a href="../users/${i}"><c:out value="${i}"/></a></th>
+     <c:forEach items="${pageCount}" var="page">
+         <th width="25" height="25"><a href="../users/<c:out value="${page}"/>"><c:out value="${page}"/></a></th>
      </c:forEach>
 
         <h1>Add a User</h1>
         <c:url var="addAction" value="/users/add"/>
-        <form:form action="${addAction}" commandName="user" id="userForm" onsubmit="return checker()">
+        <form:form action="${addAction}" commandName="user">
             <table>
                 <c:if test="${!empty user.name}">
                     <tr>

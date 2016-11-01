@@ -11,7 +11,7 @@ import java.util.regex.Pattern;
  */
 public class Validator {
 
-    private static final Pattern NAME_PATTERN = Pattern.compile("[A-Za-z]{1,45}\\s?[A-Za-z]{1,45}");
+    private static final Pattern NAME_PATTERN = Pattern.compile("[A-Za-z]{1,25}\\s?[A-Za-z]{1,25}");
     private static final Pattern AGE_PATTERN = Pattern.compile("\\d{0,2}");
 
 
@@ -25,7 +25,7 @@ public class Validator {
 
         boolean find = false;
 
-        int[] values = {10, 15, 25};
+        int[] values = {5, 10, 15, 25};
 
         for (int n : values)
             if (value == n)
