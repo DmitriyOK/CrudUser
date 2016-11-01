@@ -129,13 +129,13 @@ public class UserDaoImpl implements UserDao {
                 return pages;
             }
 
-            if (totalPages - pageNumber <= 2)  {
-                for (int i = 4; i >= 0; i--) {
+            if (totalPages - pageNumber <= 3)  {
+                for (int i = 6; i >= 0; i--) {
                    pages.add(totalPages - i);
                 }
             }
             else {
-                for (int i = -2; i < paginationSize -2; i++) {
+                for (int i = -3; i < paginationSize - 3; i++) {
                     pages.add(pageNumber + i);
                 }
             }

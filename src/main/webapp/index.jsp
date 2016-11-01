@@ -15,7 +15,7 @@
          <select name="results" size="1">
              <option selected="selected" value="5">Default</option>
              <option value="10">10</option>
-             <option value="10">15</option>
+             <option value="15">15</option>
              <option value="25">25</option>
          </select>
          <button type="submit" formaction="users/pagingby">Set it.</button>

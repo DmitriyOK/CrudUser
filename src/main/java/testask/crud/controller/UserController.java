@@ -50,7 +50,7 @@ public class UserController {
         if (users.size() == 0 || pageNumber == 0) {
 
             model.addAttribute("statusCode", new Integer(404));
-            model.addAttribute("description", "User with current id not found.");
+            model.addAttribute("description", "Users not found. May be your DataBase is empty");
 
             return "error";
         }
